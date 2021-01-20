@@ -71,7 +71,7 @@ if (ESP_PLATFORM)
 endif()
 
 # it's at this point any toolchain file is brought in
-#project(libwebsockets C CXX)
+project(libwebsockets C)
 #include(CTest)
 
 if (ESP_PLATFORM)

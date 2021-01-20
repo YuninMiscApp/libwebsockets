@@ -1,0 +1,3 @@
+
+cmake -DQG2101A_PLATFORM=1 ..
+
