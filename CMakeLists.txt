@@ -43,6 +43,14 @@ if (POLICY CMP0075)
 	cmake_policy(SET CMP0075 NEW)
 endif()
 
+
+if (QG2101A_PLATFORM)
+	set(LWS_QG2101A_PLATFORM 1)
+	set(CMAKE_TOOLCHAIN_FILE contrib/cross-qg2101a.cmake)
+	set(LWIP_PROVIDE_ERRNO 1)
+endif()
+
+
 # General Advice
 #
 # For selecting between DEBUG / RELEASE, use -DCMAKE_BUILD_TYPE=DEBUG or =RELEASE
@@ -63,8 +71,8 @@ if (ESP_PLATFORM)
 endif()
 
 # it's at this point any toolchain file is brought in
-project(libwebsockets C CXX)
-include(CTest)
+#project(libwebsockets C CXX)
+#include(CTest)
 
 if (ESP_PLATFORM)
        include_directories(
@@ -153,13 +161,14 @@ option(LWS_WITH_SECURE_STREAMS_AUTH_SIGV4 "Secure Streams Auth support for AWS S
 # have internet routing, then you can still run a subset of tests with CTest / make
 # test that only does local tests by disabling this option.
 #
-option(LWS_CTEST_INTERNET_AVAILABLE "CTest will performs tests that need the Internet" ON)
+option(LWS_CTEST_INTERNET_AVAILABLE "CTest will performs tests that need the Internet" OFF)
 
 #
 # TLS library options... all except mbedTLS are basically OpenSSL variants.
 #
-option(LWS_WITH_SSL "Include SSL support (defaults to OpenSSL or similar, mbedTLS if LWS_WITH_MBEDTLS is set)" ON)
-option(LWS_WITH_MBEDTLS "Use mbedTLS (>=2.0) replacement for OpenSSL. When setting this, you also may need to specify LWS_MBEDTLS_LIBRARIES and LWS_MBEDTLS_INCLUDE_DIRS" OFF)
+option(LWS_WITH_SSL "Include SSL support (defaults to OpenSSL or similar, mbedTLS if LWS_WITH_MBEDTLS is set)" OFF)
+option(LWS_WITH_MBEDTLS "Use mbedTLS (>=2.0) replacement for OpenSSL. When setting this, you also may need to specify LWS_MBEDTLS_LIBRARIES and LWS_MBEDTLS_INCLUDE_DIRS" 
+OFF)
 option(LWS_WITH_BORINGSSL "Use BoringSSL replacement for OpenSSL" OFF)
 option(LWS_WITH_CYASSL "Use CyaSSL replacement for OpenSSL. When setting this, you also need to specify LWS_CYASSL_LIBRARIES and LWS_CYASSL_INCLUDE_DIRS" OFF)
 option(LWS_WITH_WOLFSSL "Use wolfSSL replacement for OpenSSL. When setting this, you also need to specify LWS_WOLFSSL_LIBRARIES and LWS_WOLFSSL_INCLUDE_DIRS" OFF)
@@ -190,7 +199,7 @@ option(LWS_WITH_DRIVERS "With generic drivers for gpio, i2c, display etc" OFF)
 # Static / Dynamic build options
 #
 option(LWS_WITH_STATIC "Build the static version of the library" ON)
-option(LWS_WITH_SHARED "Build the shared version of the library" ON)
+option(LWS_WITH_SHARED "Build the shared version of the library" OFF)
 option(LWS_LINK_TESTAPPS_DYNAMIC "Link the test apps to the shared version of the library. Default is to link statically" OFF)
 option(LWS_STATIC_PIC "Build the static version of the library with position-independent code" OFF)
 #
@@ -273,7 +282,7 @@ option(LWS_WITH_SUL_DEBUGGING "Enable zombie lws_sul checking on object deletion
 option(LWS_WITH_PLUGINS_API "Build generic lws_plugins apis (see LWS_WITH_PLUGINS to also build protocol plugins)" OFF)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	option(LWS_WITH_NETLINK "Monitor Netlink for Routing Table changes" ON)
+	option(LWS_WITH_NETLINK "Monitor Netlink for Routing Table changes" OFF)
 else()
 	set(LWS_WITH_NETLINK 0)
 endif()
@@ -571,21 +580,21 @@ if (LWS_WITH_PLUGINS_API AND UNIX AND CMAKE_DL_LIBS AND NOT (${CMAKE_SYSTEM_NAME
 endif()
 
 
-CHECK_INCLUDE_FILE(in6addr.h LWS_HAVE_IN6ADDR_H)
+#CHECK_INCLUDE_FILE(in6addr.h LWS_HAVE_IN6ADDR_H)
 CHECK_INCLUDE_FILE(memory.h LWS_HAVE_MEMORY_H)
-CHECK_INCLUDE_FILE(netinet/in.h LWS_HAVE_NETINET_IN_H)
+#CHECK_INCLUDE_FILE(netinet/in.h LWS_HAVE_NETINET_IN_H)
 CHECK_INCLUDE_FILE(stdint.h LWS_HAVE_STDINT_H)
 CHECK_INCLUDE_FILE(stdlib.h LWS_HAVE_STDLIB_H)
 CHECK_INCLUDE_FILE(strings.h LWS_HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE(string.h LWS_HAVE_STRING_H)
 CHECK_INCLUDE_FILE(sys/prctl.h LWS_HAVE_SYS_PRCTL_H)
 CHECK_INCLUDE_FILE(sys/socket.h LWS_HAVE_SYS_SOCKET_H)
-CHECK_INCLUDE_FILE(sys/sockio.h LWS_HAVE_SYS_SOCKIO_H)
+#CHECK_INCLUDE_FILE(sys/sockio.h LWS_HAVE_SYS_SOCKIO_H)
 CHECK_INCLUDE_FILE(sys/stat.h LWS_HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE(sys/types.h LWS_HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILE(unistd.h LWS_HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE(vfork.h LWS_HAVE_VFORK_H)
-CHECK_INCLUDE_FILE(sys/capability.h LWS_HAVE_SYS_CAPABILITY_H)
+#CHECK_INCLUDE_FILE(vfork.h LWS_HAVE_VFORK_H)
+#CHECK_INCLUDE_FILE(sys/capability.h LWS_HAVE_SYS_CAPABILITY_H)
 CHECK_INCLUDE_FILE(malloc.h LWS_HAVE_MALLOC_H)
 CHECK_INCLUDE_FILE(pthread.h LWS_HAVE_PTHREAD_H)
 CHECK_INCLUDE_FILE(inttypes.h LWS_HAVE_INTTYPES_H)
@@ -653,11 +662,11 @@ CHECK_C_SOURCE_COMPILES("#include <stddef.h>
 		return p != NULL;
 	}" LWS_HAS_GETOPT_LONG)
 
-CHECK_C_SOURCE_COMPILES("#include <linux/rtnetlink.h>
-	int main(void) {
-		int test = RTA_PREF;
-		return 0;
-	}" LWS_HAVE_RTA_PREF)
+#CHECK_C_SOURCE_COMPILES("#include <linux/rtnetlink.h>
+#	int main(void) {
+#		int test = RTA_PREF;
+#		return 0;
+#	}" LWS_HAVE_RTA_PREF)
 
 CHECK_C_SOURCE_COMPILES("#include <sys/types.h>
 	int main(void) {
@@ -744,8 +753,8 @@ if ((CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX) AND NOT LWS_WITHOUT_TE
 	if (UNIX AND LWS_HAVE_PTHREAD_H AND NOT (${CMAKE_SYSTEM_NAME} MATCHES "QNX"))
 	# jeez clang understands -pthread but dies if he sees it at link time!
 	# http://stackoverflow.com/questions/2391194/what-is-gs-pthread-equiv-in-clang
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread" )
-	list(APPEND LIB_LIST_AT_END -lpthread)
+#	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread" )
+#	list(APPEND LIB_LIST_AT_END -lpthread)
     endif()
 endif()
 

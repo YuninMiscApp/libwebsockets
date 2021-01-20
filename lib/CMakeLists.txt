@@ -103,12 +103,12 @@ endif()
 
 # ideally we want to use pipe2()
 
-CHECK_C_SOURCE_COMPILES("#define _GNU_SOURCE\n#include <unistd.h>\nint main(void) {int fd[2];\n return pipe2(fd, 0);\n}\n" LWS_HAVE_PIPE2)
+#CHECK_C_SOURCE_COMPILES("#define _GNU_SOURCE\n#include <unistd.h>\nint main(void) {int fd[2];\n return pipe2(fd, 0);\n}\n" LWS_HAVE_PIPE2)
 
 # tcp keepalive needs this on linux to work practically... but it only exists
 # after kernel 2.6.37
 
-CHECK_C_SOURCE_COMPILES("#include <netinet/tcp.h>\nint main(void) { return TCP_USER_TIMEOUT; }\n" LWS_HAVE_TCP_USER_TIMEOUT)
+#CHECK_C_SOURCE_COMPILES("#include <netinet/tcp.h>\nint main(void) { return TCP_USER_TIMEOUT; }\n" LWS_HAVE_TCP_USER_TIMEOUT)
 
 if (LWS_WITH_TLS)
 	add_subdir_include_dirs(tls)
